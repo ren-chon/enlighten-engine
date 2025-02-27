@@ -1,3 +1,4 @@
+#include "entities/entity.hpp"
 #include "model/loader.hpp"
 #include "model/model.hpp"
 #include "model/modelTexture.hpp"
@@ -5,14 +6,20 @@
 #include "renderer/renderer.hpp"
 #include "shader/staticShader.hpp"
 #include "window/windowing.hpp"
+#include <chrono>
+#include <thread>
+
+// Function to cap the FPS to a specified limit
+
+
 
 int main() {
   DisplayManager display;
   Loader loader;
   Renderer renderer;
   display.createDisplay();
+  
   StaticShader shaders;
-
   std::vector<float> vertices = {
       // left bottom tri
       -0.5f, 0.5f,  0.f, // v0
@@ -36,14 +43,28 @@ int main() {
     return -1;
   }
   ModelTexture texture(loader.loadTexture("resources/textures/akari.jpg"));
-  TexturedModel texturedModel(model, texture);
+  TexturedModel staticModel(model, texture);
+
+  Entity entity(staticModel, glm::vec3(-1.0f, 0.0f, 0.0f), 0, 0, 0, 1);
+
+  // FPS Cap Configuration
+  const float FPS_LIMIT = 1.0f; // Target FPS
+
+  // Store the time of the last frame
+  double lastFrameTime = glfwGetTime();
   // Main loop
   while (!display.shouldClose()) {
+
+    entity.increasePosition(0.002f, 0, 0);
+    entity.increaseRotation(0, 1, 0);
     renderer.prepare();
     shaders.start();
-    renderer.render(texturedModel);
+    renderer.render(entity, shaders);
     shaders.stop();
     display.updateDisplay();
+
+    // FPS cap
+    display.capFPS(FPS_LIMIT, lastFrameTime);
   }
 
   shaders.cleanUp();

@@ -19,4 +19,6 @@ public:
     // Check if the window should close (e.g., user clicked the close button)
     return glfwWindowShouldClose(window);
   }
+  void capFPS(float fpsLimit, double &lastTime);
+  void logMonitorInfo();
 };
