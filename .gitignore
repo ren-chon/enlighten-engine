@@ -1,5 +1,5 @@
-cornflower_blue_window
-glad.c
+ogl
 *.o
-glad/*
-KHR/*
+includes/*
+
+stb_image.h

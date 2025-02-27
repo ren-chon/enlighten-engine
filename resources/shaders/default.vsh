@@ -2,11 +2,14 @@
 
 in vec3 position;
 
-out vec3 color;
+in vec2 textureCoords;
+
+// out to frag shader
+out vec2 passTextureCoords;
 
 void main() {
     // where in screen the vertex should be rendered by setting this
     gl_Position = vec4(position, 1.0);
-    // set color based on position of that vertex
-    color = vec3(position.x + 0.5, 1.0, position.y + 0.5);
+    // textcoords get linearly intrpolated all  over the quad tobe  used in frag shader
+    passTextureCoords = textureCoords;
 }
