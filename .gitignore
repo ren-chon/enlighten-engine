@@ -1,0 +1,5 @@
+cornflower_blue_window
+glad.c
+*.o
+glad/*
+KHR/*
