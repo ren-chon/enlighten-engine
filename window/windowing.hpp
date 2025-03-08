@@ -21,4 +21,7 @@ public:
   }
   void capFPS(float fpsLimit, double &lastTime);
   void logMonitorInfo();
+  int getWidth() { return WIDTH; }
+  int getHeight() { return WIDTH; }
+  GLFWwindow *getWindow() { return window; }
 };

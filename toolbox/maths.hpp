@@ -1,4 +1,6 @@
 #pragma once
+#include "../entities/camera.hpp"
+#include <cmath> // For std::radians
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> // For glm::translate, glm::rotate, etc.
@@ -18,5 +20,26 @@ public:
     matrix = glm::scale(matrix, glm::vec3(scale, scale, scale));
 
     return matrix;
+  }
+
+  glm::mat4 createViewMatrix(const Camera &camera) {
+    // Create an identity matrix
+    glm::mat4 viewMatrix = glm::mat4(1.0f);
+
+    // Rotate based on camera pitch (around X-axis)
+    float pitch = glm::radians(camera.getPitch()); // Use glm::radians
+    viewMatrix = glm::rotate(viewMatrix, pitch, glm::vec3(1.0f, 0.0f, 0.0f));
+
+    // Rotate based on camera yaw (around Y-axis)
+    float yaw = glm::radians(camera.getYaw()); // Use glm::radians
+    viewMatrix = glm::rotate(viewMatrix, yaw, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // Translate based on camera position (negative because we move the world,
+    // not the camera)
+    glm::vec3 cameraPos = camera.getPosition();
+    glm::vec3 negativeCameraPos = -cameraPos;
+    viewMatrix = glm::translate(viewMatrix, negativeCameraPos);
+
+    return viewMatrix;
   }
 };

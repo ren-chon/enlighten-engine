@@ -1,8 +1,11 @@
+#include "entities/camera.hpp"
 #include "entities/entity.hpp"
+#include "entities/Light.hpp"
 #include "model/loader.hpp"
 #include "model/model.hpp"
 #include "model/modelTexture.hpp"
 #include "model/texturedModel.hpp"
+#include "renderer/OBJLoader.hpp"
 #include "renderer/renderer.hpp"
 #include "shader/staticShader.hpp"
 #include "window/windowing.hpp"
@@ -11,54 +14,42 @@
 
 // Function to cap the FPS to a specified limit
 
-
-
 int main() {
   DisplayManager display;
   Loader loader;
-  Renderer renderer;
   display.createDisplay();
-  
+
   StaticShader shaders;
-  std::vector<float> vertices = {
-      // left bottom tri
-      -0.5f, 0.5f,  0.f, // v0
-      -0.5f, -0.5f, 0.f, // v1
-      0.5,   -0.5f, 0.f, // v2
-      0.5f,  0.5f,  0.f, // v3
-  };
-  std::vector<int> indices = {
-      0, 1, 3, // top left tri v0,v1,v3
-      3, 1, 2, // bottom right tri v3,v1,v2
-  };
-  std::vector<float> textureCoords = {
-      0, 0, // v0
-      0, 1, // v1
-      1, 1, // v2
-      1, 0, // v3
-  };
-  RawModel model = loader.loadToVAO(vertices, indices, textureCoords);
+  Renderer renderer(shaders);
+  OBJLoader objLoader;
+  RawModel model = objLoader.loadObjModel("resources/models/dragon.obj", loader);
   if (model.getVaoID() == 0) {
     std::cerr << "Failed to load model!" << std::endl;
     return -1;
   }
-  ModelTexture texture(loader.loadTexture("resources/textures/akari.jpg"));
+  ModelTexture texture(loader.loadTexture(""));
   TexturedModel staticModel(model, texture);
 
-  Entity entity(staticModel, glm::vec3(-1.0f, 0.0f, 0.0f), 0, 0, 0, 1);
-
+  Entity entity(staticModel, glm::vec3(0, 0, -20), 0, 0, 0, 1);
+Light light(glm::vec3(0, 5, 5), glm::vec3(1, 1, 1)); // Front-top lighting
+  Camera camera;
   // FPS Cap Configuration
-  const float FPS_LIMIT = 1.0f; // Target FPS
+  const float FPS_LIMIT = 144.0f; // Target FPS
 
   // Store the time of the last frame
   double lastFrameTime = glfwGetTime();
+  GLenum error = glGetError();
+  if (error != GL_NO_ERROR) {
+    std::cerr << "OpenGL error: " << error << std::endl;
+  }
   // Main loop
   while (!display.shouldClose()) {
-
-    entity.increasePosition(0.002f, 0, 0);
     entity.increaseRotation(0, 1, 0);
+    camera.move(display.getWindow());
     renderer.prepare();
     shaders.start();
+    shaders.loadLight(light);
+    shaders.LoadViewMatrix(camera);
     renderer.render(entity, shaders);
     shaders.stop();
     display.updateDisplay();
@@ -70,6 +61,5 @@ int main() {
   shaders.cleanUp();
   loader.cleanup();
   display.closeDisplay();
-
   return 0;
 }

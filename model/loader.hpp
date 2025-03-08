@@ -10,7 +10,8 @@ class Loader {
 public:
   RawModel loadToVAO(const std::vector<float> &positions,
                      const std::vector<int> &indices,
-                     const std::vector<float> &texCoords);
+                     const std::vector<float> &texCoords,
+                     const std::vector<float> &normal);
 
   void cleanup();
   int loadTexture(std::string fileName);
@@ -20,8 +21,8 @@ private:
   std::vector<GLuint> vbos;
   std::vector<GLuint> textures;
   int createVAO();
-  void storeDataInAttribList(int attribNumber, const std::vector<float> &data,
-                             int coordSize);
+  void storeDataInAttribList(int attribNumber, int coordSize,
+                             const std::vector<float> &data);
   void unbindVAO();
   void bindIndicesBuffer(const std::vector<int> &indices);
 };

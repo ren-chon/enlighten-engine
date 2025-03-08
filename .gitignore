@@ -2,4 +2,12 @@ ogl
 *.o
 includes/*
 
+*.so
+*.obj
+*.mtl
+
+
+*.png
+*.jpg
+
 stb_image.h

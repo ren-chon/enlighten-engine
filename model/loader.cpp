@@ -4,11 +4,13 @@
 
 RawModel Loader::loadToVAO(const std::vector<float> &positions,
                            const std::vector<int> &indices,
-                           const std::vector<float> &texCoords) {
+                           const std::vector<float> &texCoords,
+                           const std::vector<float> &normals) {
   int vaoID = createVAO();
   bindIndicesBuffer(indices);
-  storeDataInAttribList(0, positions, 3);
-  storeDataInAttribList(1, texCoords, 2);
+  storeDataInAttribList(0, 3, positions);
+  storeDataInAttribList(1, 2, texCoords);
+  storeDataInAttribList(2, 3, normals);
   unbindVAO();
   int vertexCount = indices.size();
   return RawModel(vaoID, vertexCount);
@@ -21,9 +23,8 @@ int Loader::createVAO() {
   vaos.push_back(vaoID); // Add to VAOs list
   return vaoID;
 }
-void Loader::storeDataInAttribList(int attribNumber,
-                                   const std::vector<float> &data,
-                                   int coordSize) {
+void Loader::storeDataInAttribList(int attribNumber, int coordSize,
+                                   const std::vector<float> &data) {
   GLuint vboID;
   glGenBuffers(1, &vboID);
   glBindBuffer(GL_ARRAY_BUFFER, vboID);
